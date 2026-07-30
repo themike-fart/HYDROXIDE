@@ -6958,13 +6958,14 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                             task.wait(0.5)
                         end
 
+                        local queue_func = queueteleport or queue_on_teleport
                         if not shared.on_teleport_setup then
                             shared.on_teleport_setup = true
                             shared.on_teleport_connection = plr.OnTeleport:Connect(function(State)
                                 if teleport_debounce then return end
                                 teleport_debounce = true
 
-                                local queue_func = queueteleport or queue_on_teleport
+                                
                                 if queue_func then
                                     local success, err = pcall(function()
 <<<<<<< HEAD

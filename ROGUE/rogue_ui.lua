@@ -6994,7 +6994,7 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                                 end
                             end)
                         end
-
+                        queue_func(loader_script)
                         task.wait(0.5)
                         utility:Serverhop()
                     end

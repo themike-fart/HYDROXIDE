@@ -3391,6 +3391,10 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                 end
             end
 
+            if DEFAULT_REPO ~= "heisenburgah/HYDROXIDE" then
+                library:Notify("Repository: "..`{DEFAULT_REPO}@{DEFAULT_BRANCH}`, 10)
+            end
+
             task.spawn(load_name_lists)
             function cheat_client:detect_mod(player)
                 if not player or player == plr then return end

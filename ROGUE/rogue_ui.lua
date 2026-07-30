@@ -3162,6 +3162,7 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
 
         local SaveManager = loadstring(game:HttpGet(repo .. "DEPENDENCIES/SaveManager.lua?nonce="..tostring(math.random())) )()
         local ThemeManager = loadstring(game:HttpGet(repo .. "DEPENDENCIES/ThemeManager.lua?nonce="..tostring(math.random()) ))()
+        local Captcha = loadstring(game:HttpGet(repo .. "DEPENDENCIES/Captcha.lua?nonce="..tostring(math.random()) ))()
 
         SaveManager:SetLibrary(library)
         ThemeManager:SetLibrary(library)
@@ -3169,6 +3170,7 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
 
         shared.SaveManager = SaveManager
         shared.ThemeManager = ThemeManager
+        shared.Captcha = Captcha
     else
         print("Failed to load UI library: " .. tostring(library_func))
     end
@@ -3392,7 +3394,7 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
             end
 
             if DEFAULT_REPO ~= "heisenburgah/HYDROXIDE" then
-                library:Notify("Repository: "..`{DEFAULT_REPO}@{DEFAULT_BRANCH}`, 10)
+                library:Notify("Repository: "..`{DEFAULT_REPO}@{DEFAULT_BRANCH}`, 30)
             end
 
             task.spawn(load_name_lists)
@@ -24228,147 +24230,6 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
         end
 
         do
-            local function readCSG(union)
-                local result = gethiddenproperty(union, "PhysicalConfigData")
-                local unionData
-                
-                if type(result) == "table" and #result >= 2 then
-                    unionData = result[2]
-                else
-                    unionData = select(2, pcall(function() return gethiddenproperty(union, "PhysicalConfigData") end))
-                    
-                    if type(unionData) ~= "string" then
-                        warn("DEBUG - PhysicalConfigData type:", type(result))
-                        
-                        for _, prop in pairs({"BinaryData", "MeshData", "RawData", "ConfigData"}) do
-                            local success, data = pcall(function() return gethiddenproperty(union, prop) end)
-                            if success and type(data) == "string" and #data > 100 then
-                                warn("Found usable data in property:", prop)
-                                unionData = data
-                                break
-                            end
-                        end
-                        
-                        if type(unionData) ~= "string" then
-                            warn("WARNING: Could not get valid CSG data. Captcha bypass may fail.")
-                            return {}
-                        end
-                    end
-                end
-                
-                local unionDataStream = tostring(unionData)
-                if type(unionDataStream) ~= "string" then
-                    warn("ERROR: Failed to convert union data to string")
-                    return {}
-                end
-
-                local function readByte(n)
-                    if #unionDataStream < n then
-                        return ""
-                    end
-                    local returnData = unionDataStream:sub(1, n)
-                    unionDataStream = unionDataStream:sub(n+1, #unionDataStream)
-                    return returnData
-                end;
-
-                readByte(51);
-
-                local points = {};
-
-                while #unionDataStream > 0 do
-                    readByte(20)
-                    readByte(20)
-
-                    local vertSize = string.unpack('ii', readByte(8));
-
-                    for i = 1, (vertSize/3) do
-                        local x, y, z = string.unpack('fff', readByte(12))
-                        points[#points + 1] = union.CFrame:ToWorldSpace(CFrame.new(x, y, z)).Position;
-                    end;
-
-                    local faceSize = string.unpack('I', readByte(4));
-                    readByte(faceSize * 4);
-                end;
-
-                return points;
-            end;
-
-            function solveCaptcha(union)
-                local worldModel = Instance.new('WorldModel');
-                worldModel.Parent = cg;
-
-                local newUnion = union:Clone()
-                newUnion.Parent = worldModel;
-
-                local cameraCFrame = gethiddenproperty(union.Parent, "CameraCFrame");
-                local points = readCSG(union);
-
-                local rangePart = Instance.new('Part');
-                rangePart.Parent = worldModel;
-                rangePart.CFrame = cameraCFrame:ToWorldSpace(CFrame.new(-8, 0, 0))
-                rangePart.Size = Vector3.new(1, 100, 100);
-
-                local model = Instance.new('Model', worldModel);
-                local baseModel = Instance.new('Model', worldModel);
-
-                baseModel.Name = 'Base';
-                model.Name = 'Final';
-
-                for i, v in next, points do
-                    local part = Instance.new('Part', baseModel);
-                    part.CFrame = CFrame.new(v);
-                    part.Size = Vector3.new(0.1, 0.1, 0.1);
-                end;
-
-                local seen = false;
-                for i = 0, 100 do
-                    rangePart.CFrame = rangePart.CFrame * CFrame.new(1, 0, 0)
-
-                    local overlapParams = OverlapParams.new();
-                    overlapParams.FilterType = Enum.RaycastFilterType.Whitelist;
-                    overlapParams.FilterDescendantsInstances = {baseModel};
-
-                    local bob = worldModel:GetPartsInPart(rangePart, overlapParams);
-                    if(seen and #bob <= 0) then break end;
-
-                    for i, v in next, bob do
-                        seen = true;
-
-                        local new = v:Clone();
-
-                        new.Parent = model;
-                        new.CFrame = CFrame.new(new.Position);
-                    end;
-                end;
-
-                for i, v in next, model:GetChildren() do
-                    v.CFrame = v.CFrame * CFrame.Angles(0, math.rad(union.Orientation.Y), 0);
-                end;
-
-                local shorter, found = math.huge, '';
-                local result = model:GetExtentsSize();
-
-                local values = {
-                    ['Arocknid'] = Vector3.new(11.963972091675, 6.2284870147705, 12.341609954834),
-                    ['Howler'] = Vector3.new(2.904595375061, 7.5143890380859, 6.4855442047119),
-                    ['Evil Eye'] = Vector3.new(6.7253036499023, 6.2872190475464, 11.757738113403),
-                    ['Zombie Scroom'] = Vector3.new(4.71413230896, 4.400146484375, 4.7931442260742),
-                    ['Golem'] = Vector3.new(17.123439788818, 21.224365234375, 6.9429664611816),
-                };
-
-                for i, v in next, values do
-                    if((result - v).Magnitude < shorter) then
-                        found = i;
-                        shorter = (result - v).Magnitude;
-                    end;
-                end;
-
-                worldModel:Destroy();
-                worldModel = nil;
-
-                return found;
-            end
-
             local time_elapsed = 0
             local playerDays = 0
 
@@ -24413,22 +24274,27 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                 return has_enough
             end
 
+            local getpcd = getpcd and getpcd or gethiddenproperty and function(union)
+                return "", gethiddenproperty(union, "PhysicalConfigData")
+            end
+
             local function gacha()
                 if not (Toggles and Toggles.day_farm and Toggles.day_farm.Value) and plr.Name ~= "Tharxifen" then return false end
                 if not plr.Character then return end
+                if not getpcd then return end
 
                 local npc = FindFirstChild(workspace.NPCs, "Xenyari")
-                local npcHead = FindFirstChild(npc, "Head")
+                local npcRoot = FindFirstChild(npc, "HumanoidRootPart")
                 local clickDetector = FindFirstChildWhichIsA(npc, "ClickDetector")
                 
-                if not workspace.NPCs or not FindFirstChild(workspace.NPCs, "Xenyari") or 
-                not FindFirstChild(workspace.NPCs.Xenyari, "Head") or
-                not FindFirstChildWhichIsA(workspace.NPCs.Xenyari, "ClickDetector") then
+                if not npc or 
+                not npcRoot or
+                not clickDetector then
                     return false
                 end
 
-                local distanceFromNPC = plr:DistanceFromCharacter(npcHead.Position)
-                if distanceFromNPC > 20 then
+                local distanceFromNPC = plr:DistanceFromCharacter(npcRoot.Position)
+                if distanceFromNPC > 10 then
                     return false
                 end
 
@@ -24461,26 +24327,51 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                         end
                     end)
                 end
+
                 
-                fireclickdetector(clickDetector, 0, "MouseHoverEnter")
+                
+
 
                 repeat
-                    fireclickdetector(clickDetector)
-                task.wait(0.25);
+                    local rootPosition = workspace.CurrentCamera:WorldToViewportPoint(npcRootPart.Position);
+                    vim:SendMouseButtonEvent(rootPosition.X, rootPosition.Y, 0, false, game, 1);
+                    task.wait();
+                    vim:SendMouseButtonEvent(rootPosition.X, rootPosition.Y, 0, true, game, 1);
+                    task.wait(0.25);
                 until FindFirstChild(plr.PlayerGui, 'CaptchaLoad') or FindFirstChild(plr.PlayerGui, 'Captcha');
                 
                 repeat task.wait(0.05) until FindFirstChild(plr.PlayerGui, 'Captcha');
                 repeat
                     local captchaGUI = FindFirstChild(plr.PlayerGui, 'Captcha');
                     local choices = captchaGUI and captchaGUI.MainFrame.Options:GetChildren();
-                    local union = captchaGUI and captchaGUI.MainFrame.Viewport.Union;
+                    task.wait(1)
+                    local union = captchaGUI and captchaGUI.MainFrame.Viewport:WaitForChild("Union");
 
                     utility:random_wait(true);
 
-                    fireclickdetector(clickDetector, 0, "MouseHoverLeave")
+                    local _,data = getpcd(union)
+                    local decodedUnion;
+                    local isOk, err = pcall(function()
+                        decodedUnion = shared.Captcha.decode(data)
+                    end)
+                    if not isOk or not decodedUnion then
+                        local message = "failed to decode CSG: ".. tostring(err)
+                        warn(message)
+                        kickPlayer(string.format("%s (%s) gacha: %s", plr.Name, plr.UserId, message))
+                        return false
+                    end
 
-                    if(choices and union) then
-                        local captchaAnswer = solveCaptcha(union);
+                    if(choices and union and decodedUnion) then
+                        local captchaAnswer;
+                        local isOk, err = pcall(function()
+                            captchaAnswer = shared.Captcha.solve(decodedUnion, union.CFrame, gethiddenproperty(union.Parent, "CameraCFrame"))
+                        end)
+                        if not isOk or not captchaAnswer then
+                            local message = "failed to solve captcha: ".. tostring(err)
+                            warn(message)
+                            kickPlayer(string.format("%s (%s) gacha: %s", plr.Name, plr.UserId, message))
+                            return false
+                        end
 
                         for i, v in next, choices do
                             if(v.Name == captchaAnswer) then

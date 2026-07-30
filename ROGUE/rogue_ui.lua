@@ -6985,6 +6985,7 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
 
                                     if not success then
                                         utility:plain_webhook(string.format("FAILED to queue script: %s", tostring(err)))
+                                        warn(tostring(err))
                                     end
                                 else
                                     utility:plain_webhook("WARNING: queueteleport not available - script will NOT auto-load!")
@@ -24523,6 +24524,7 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                 utility:plain_webhook(plr.Name .. " is now at " .. playerDays .. " days")
 
                 if day_goal() then
+                    warn("day goal")
                     return
                 end
                 

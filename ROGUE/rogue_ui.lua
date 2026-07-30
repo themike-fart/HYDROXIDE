@@ -22170,8 +22170,9 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
         do --auto_captcha
             utility:Connection(plr.PlayerGui.ChildAdded, function(child)
                 if Toggles and Toggles.auto_captcha and Toggles.auto_captcha.Value and child.Name == "Captcha" and getpcd then
-                    local choices = child:WaitForChild("Options")
-                    local union = child:WaitForChild("MainFrame"):WaitForChild("Viewport"):WaitForChild("Union")
+                    local mainFrame = child:WaitForChild("MainFrame")
+                    local choices = mainFrame:WaitForChild("Options")
+                    local union = mainFrame:WaitForChild("Viewport"):WaitForChild("Union")
                     local _,data = getpcd(union)
 
                     local decodedUnion;

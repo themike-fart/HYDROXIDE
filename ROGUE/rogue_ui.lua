@@ -2,7 +2,22 @@ if not game:IsLoaded() then
     game.Loaded:Wait()
 end
 
-local DEFAULT_REPO = getgenv().hydroxide_repo or "zyu/hydroxide"
+local DEFAULT_REPO = getgenv().hydroxide_repo or "heisenburgah/HYDROXIDE"
+local DEFAULT_BRANCH = getgenv().hydroxide_branch or "main"
+
+local loader_script = string.format([[
+if not game:IsLoaded() then game.Loaded:Wait() end
+task.wait(1)
+getgenv().hydroxide_repo = "%s"
+getgenv().hydroxide_branch = "%s"
+local s,code=pcall(function() return game:HttpGet("https://raw.githubusercontent.com/%s/refs/heads/%s/loader.lua?nonce="..tostring(math.random())) end)
+if not s then
+    print("[QUEUE ERROR] HttpGet failed:",code)
+     return
+end
+local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Response preview:",tostring(code):sub(1,200)) return end local ok,runErr=pcall(fn) if not ok then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end
+]], DEFAULT_REPO, DEFAULT_BRANCH, DEFAULT_REPO, DEFAULT_BRANCH)
+
 
 local cloneref = cloneref or function(v) return v end
 local Services = setmetatable({}, {
@@ -3128,7 +3143,11 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
         end
     end
     
+<<<<<<< HEAD
     local repo = "https://git.fable.bz/".. DEFAULT_REPO .."/raw/branch/main/"
+=======
+    local repo = "https://raw.githubusercontent.com/".. DEFAULT_REPO .."/refs/heads/"..DEFAULT_BRANCH.."/"
+>>>>>>> 53ca92b (fix gacha ban)
     local success, library_func = pcall(function()
         return loadstring(game:HttpGet(repo .. "DEPENDENCIES/Library.lua", true))()
     end)
@@ -6942,6 +6961,7 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                                 local queue_func = queueteleport or queue_on_teleport
                                 if queue_func then
                                     local success, err = pcall(function()
+<<<<<<< HEAD
                                         local loader_script = game
 										loader_script = string.format([[
                                         if not game:IsLoaded() then game.Loaded:Wait() end
@@ -6954,6 +6974,8 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                                         end
                                         local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Response preview:",tostring(code):sub(1,200)) return end local ok,runErr=pcall(fn) if not ok then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end
                                         ]], DEFAULT_REPO, DEFAULT_REPO)
+=======
+>>>>>>> 53ca92b (fix gacha ban)
                                         queue_func(loader_script)
                                     end)
 
@@ -13299,9 +13321,9 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                         local queue_func = queueteleport or queue_on_teleport
                         if queue_func then
                             local success, err = pcall(function()
-                                local loader_script
                                 if readfile and isfile and isfile("bazaar_loader.lua") then
                                     loader_script = [[local code=readfile("bazaar_loader.lua") local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Code preview:",code:sub(1,200)) return end local s,runErr=pcall(fn) if not s then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end]]
+<<<<<<< HEAD
                                 else
                                     loader_script = string.format([[
                                     if not game:IsLoaded() then game.Loaded:Wait() end
@@ -13312,6 +13334,8 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                                     end)
                                     if not s then print("[QUEUE ERROR] HttpGet failed:",code) return end local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Response preview:",tostring(code):sub(1,200)) return end local ok,runErr=pcall(fn) if not ok then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end
                                     ]], DEFAULT_REPO, DEFAULT_REPO)
+=======
+>>>>>>> 53ca92b (fix gacha ban)
                                 end
                                 queue_func(loader_script)
                             end)
@@ -24432,6 +24456,8 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                         end
                     end)
                 end
+                
+                fireclickdetector(clickDetector, 0, "MouseHoverEnter")
 
                 repeat
                     fireclickdetector(clickDetector)
@@ -24445,6 +24471,8 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                     local union = captchaGUI and captchaGUI.MainFrame.Viewport.Union;
 
                     utility:random_wait(true);
+
+                    fireclickdetector(clickDetector, 0, "MouseHoverLeave")
 
                     if(choices and union) then
                         local captchaAnswer = solveCaptcha(union);
@@ -27052,9 +27080,9 @@ end
                     local queue_func = queueteleport or queue_on_teleport
                     if queue_func then
                         local success, err = pcall(function()
-                            local loader_script
                             if readfile and isfile and isfile("bazaar_loader.lua") then
                                 loader_script = [[local code=readfile("bazaar_loader.lua") local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Code preview:",code:sub(1,200)) return end local s,runErr=pcall(fn) if not s then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end]]
+<<<<<<< HEAD
                             else
                                 loader_script = string.format([[
                                 if not game:IsLoaded() then game.Loaded:Wait() end 
@@ -27065,6 +27093,8 @@ end
                                 end)
                                 if not s then print("[QUEUE ERROR] HttpGet failed:",code) return end local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Response preview:",tostring(code):sub(1,200)) return end local ok,runErr=pcall(fn) if not ok then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end
                                 ]], DEFAULT_REPO, DEFAULT_REPO)
+=======
+>>>>>>> 53ca92b (fix gacha ban)
                             end
                             queue_func(loader_script)
                         end)

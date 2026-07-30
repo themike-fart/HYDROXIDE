@@ -18,7 +18,9 @@ end
 local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Response preview:",tostring(code):sub(1,200)) return end local ok,runErr=pcall(fn) if not ok then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end
 ]], DEFAULT_REPO, DEFAULT_BRANCH, DEFAULT_REPO, DEFAULT_BRANCH)
 
-
+local getpcd = getpcd and getpcd or gethiddenproperty and function(union)
+    return "", gethiddenproperty(union, "PhysicalConfigData")
+end
 local cloneref = cloneref or function(v) return v end
 local Services = setmetatable({}, {
     __index = function(self, name)
@@ -569,6 +571,7 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
             auto_dialogue = false,
             auto_bard = false,
             hide_bard = false,
+            auto_captcha = false,
             anti_afk = false,
             auto_trinket = false,
             auto_ingredient = false,
@@ -8802,6 +8805,14 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                 Default = cheat_client.config.hide_bard,
                 Callback = function(value)
                     cheat_client.config.hide_bard = value
+                end
+            })
+
+            group_general:AddToggle("auto_captcha", {
+                Text = "Auto Captcha",
+                Default = cheat_client.config.auto_captcha,
+                Callback = function(value)
+                    cheat_client.config.auto_captcha = value
                 end
             })
 
@@ -22155,6 +22166,48 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                 end)
             end
         end
+
+        do --auto_captcha
+            utility:Connection(plr.PlayerGui.ChildAdded, function(child)
+                if Toggles and Toggles.auto_captcha and Toggles.auto_captcha.Value and child.Name == "Captcha" and getpcd then
+                    local choices = child:WaitForChild("Options")
+                    local union = child:WaitForChild("MainFrame"):WaitForChild("Viewport"):WaitForChild("Union")
+                    local _,data = getpcd(union)
+
+                    local decodedUnion;
+                    local isOk, err = pcall(function()
+                        decodedUnion = shared.Captcha.decode(data)
+                    end)
+                    if not isOk or not decodedUnion then
+                        local message = "failed to decode CSG: ".. tostring(err)
+                        warn(message)
+                        return
+                    end
+
+                    local captchaAnswer;
+                    local isOk, err = pcall(function()
+                        captchaAnswer = shared.Captcha.solve(decodedUnion, union.CFrame, gethiddenproperty(union.Parent, "CameraCFrame"))
+                        print("captcha:", captchaAnswer)
+                    end)
+                    if not isOk or not captchaAnswer then
+                        local message = "failed to solve captcha: ".. tostring(err)
+                        warn(message)
+                        return
+                    end
+
+                    for i,v in choices:GetChildren() do
+                        if v.Name == captchaAnswer then
+                            local isOk, err = pcall(replicatesignal, v.MouseButton1Click)
+                            if not isOk or not captchaAnswer then
+                                local message = "failed to click captcha: ".. tostring(err)
+                                warn(message)
+                            end
+                            return
+                        end
+                    end
+                end
+            end)
+        end
     
         do
             if game.PlaceId ~= 14341521240 then
@@ -24273,10 +24326,6 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                 end
 
                 return has_enough
-            end
-
-            local getpcd = getpcd and getpcd or gethiddenproperty and function(union)
-                return "", gethiddenproperty(union, "PhysicalConfigData")
             end
 
             local function gacha()

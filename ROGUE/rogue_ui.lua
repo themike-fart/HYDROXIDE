@@ -15,18 +15,6 @@ end
 local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Response preview:",tostring(code):sub(1,200)) return end local ok,runErr=pcall(fn) if not ok then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end
 ]], DEFAULT_RAW, DEFAULT_RAW)
 
-local loader_script = string.format([[
-if not game:IsLoaded() then game.Loaded:Wait() end
-task.wait(1)
-getgenv().hydroxide_repo = "%s"
-getgenv().hydroxide_branch = "%s"
-local s,code=pcall(function() return game:HttpGet("https://raw.githubusercontent.com/%s/refs/heads/%s/loader.lua?nonce="..tostring(math.random())) end)
-if not s then
-    print("[QUEUE ERROR] HttpGet failed:",code)
-     return
-end
-local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Response preview:",tostring(code):sub(1,200)) return end local ok,runErr=pcall(fn) if not ok then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end
-]], DEFAULT_REPO, DEFAULT_BRANCH, DEFAULT_REPO, DEFAULT_BRANCH)
 
 local getpcd = getpcd and getpcd or gethiddenproperty and function(union)
     return "", gethiddenproperty(union, "PhysicalConfigData")
@@ -3401,9 +3389,9 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                 end
             end
 
-            if DEFAULT_REPO ~= "heisenburgah/HYDROXIDE" then
-                library:Notify("Repository: "..`{DEFAULT_REPO}@{DEFAULT_BRANCH}`, 30)
-            end
+            --if DEFAULT_REPO ~= "heisenburgah/HYDROXIDE" then
+            --    library:Notify("Repository: "..`{DEFAULT_REPO}@{DEFAULT_BRANCH}`, 30)
+            --end
 
             task.spawn(load_name_lists)
             function cheat_client:detect_mod(player)

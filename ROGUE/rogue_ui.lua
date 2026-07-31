@@ -27013,27 +27013,9 @@ end
                     local queue_func = queueteleport or queue_on_teleport
                     if queue_func then
                         local success, err = pcall(function()
-<<<<<<< HEAD
-                            if readfile and isfile and isfile("bazaar_loader.lua") then
-                                loader_script = [[local code=readfile("bazaar_loader.lua") local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Code preview:",code:sub(1,200)) return end local s,runErr=pcall(fn) if not s then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end]]
-<<<<<<< HEAD
-                            else
-                                loader_script = string.format([[
-                                if not game:IsLoaded() then game.Loaded:Wait() end 
-                                task.wait(1)
-                                getgenv().hydroxide_repo = "%s"
-                                local s,code=pcall(function()
-                                    return game:HttpGet("https://git.fable.bz/%s/raw/branch/main/loader.lua?nonce="..tostring(math.random()))
-                                end)
-                                if not s then print("[QUEUE ERROR] HttpGet failed:",code) return end local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Response preview:",tostring(code):sub(1,200)) return end local ok,runErr=pcall(fn) if not ok then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end
-                                ]], DEFAULT_REPO, DEFAULT_REPO)
-=======
->>>>>>> 53ca92b (fix gacha ban)
-=======
                             local load = loader_script
                             if readfile and isfile and isfile("bazaar_loader.lua") then
                                 load = [[local code=readfile("bazaar_loader.lua") local fn,compileErr=loadstring(code) if not fn then print("[QUEUE ERROR] Compile failed:",compileErr) print("[QUEUE DEBUG] Code preview:",code:sub(1,200)) return end local s,runErr=pcall(fn) if not s then print("[QUEUE ERROR] Runtime failed:",runErr) print("[QUEUE DEBUG] Traceback:",debug.traceback()) end]]
->>>>>>> main
                             end
                             queue_func(load)
                         end)

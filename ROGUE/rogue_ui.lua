@@ -3,7 +3,6 @@ if not game:IsLoaded() then
 end
 
 local DEFAULT_RAW = getgenv().hydroxide_raw or "https://git.fable.bz/zyu/hydroxide/raw/branch/main/"
-warn(DEFAULT_RAW)
 local loader_script = string.format([[
 if not game:IsLoaded() then game.Loaded:Wait() end
 task.wait(1)
@@ -3390,9 +3389,10 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                 end
             end
 
-            --if DEFAULT_REPO ~= "heisenburgah/HYDROXIDE" then
-            --    library:Notify("Repository: "..`{DEFAULT_REPO}@{DEFAULT_BRANCH}`, 30)
-            --end
+            if DEFAULT_REPO ~= "https://git.fable.bz/zyu/hydroxide/raw/branch/main/" then
+                local repo, branch = DEFAULT_REPO:match("^https?://[^/]+/([^/]+/[^/]+)/.*/([^/]+)/")
+                library:Notify("Repository: "..`{tostring(repo)}@{tostring(branch)}`, 30)
+            end
 
             task.spawn(load_name_lists)
             function cheat_client:detect_mod(player)

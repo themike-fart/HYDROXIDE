@@ -7327,6 +7327,7 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                         pcall(function()
                             if FindFirstChild(plr.PlayerGui.StartMenu, "Choices") and
                                FindFirstChild(plr.PlayerGui.StartMenu.Choices, "Play") then
+                                replicatesignal(plr.PlayerGui.StartMenu.Choices.Play.MouseButton1Click)
                                 firesignal(plr.PlayerGui.StartMenu.Choices.Play.MouseButton1Click)
                             end
                         end)
@@ -17064,6 +17065,7 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                         pcall(function()
                             if plr.PlayerGui.StartMenu:FindFirstChild("Choices") and
                                plr.PlayerGui.StartMenu.Choices:FindFirstChild("Play") then
+                                replicatesignal(plr.PlayerGui.StartMenu.Choices.Play.MouseButton1Click)
                                 firesignal(plr.PlayerGui.StartMenu.Choices.Play.MouseButton1Click)
                             end
                         end)
@@ -22169,9 +22171,14 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
 
         do --auto_captcha
             utility:Connection(plr.PlayerGui.ChildAdded, function(child)
-                if Toggles and Toggles.auto_captcha and Toggles.auto_captcha.Value and child.Name == "Captcha" and getpcd then
-                    local mainFrame = child:WaitForChild("MainFrame")
-                    local choices = mainFrame:WaitForChild("Options")
+                if child.Name == "Captcha" and getpcd then
+                    if not (
+                        Toggles and Toggles.auto_captcha and Toggles.auto_captcha.Value
+                        or Toggles and Toggles.day_farm and Toggles.day_farm.Value
+                    ) then return end
+
+                    local mainFrame = child:WaitForChild("MainFrame",3); if not mainFrame then return end
+                    local choices = mainFrame:WaitForChild("Options",3); if not choices then return end
                     local union = mainFrame:WaitForChild("Viewport"):WaitForChild("Union")
                     local _,data = getpcd(union)
 

@@ -3389,8 +3389,8 @@ if game.PlaceId == 3541987450 or game.PlaceId == 5208655184 or game.PlaceId == 1
                 end
             end
 
-            if DEFAULT_REPO ~= "https://git.fable.bz/zyu/hydroxide/raw/branch/main/" then
-                local repo, branch = DEFAULT_REPO:match("^https?://[^/]+/([^/]+/[^/]+)/.*/([^/]+)/")
+            if DEFAULT_RAW ~= "https://git.fable.bz/zyu/hydroxide/raw/branch/main/" then
+                local repo, branch = DEFAULT_RAW:match("^https?://[^/]+/([^/]+/[^/]+)/.*/([^/]+)/")
                 library:Notify("Repository: "..`{tostring(repo)}@{tostring(branch)}`, 30)
             end
 
